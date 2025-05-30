@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results - License Usage Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 2rem 0;
+        }
+        .results-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .license-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .license-card:hover {
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .user-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .back-button {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-button">
+            <a href="/" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Back to Upload
+            </a>
+        </div>
+
+        <div class="results-container">
+            <h1 class="text-center mb-4">Analysis Results</h1>
+            <p class="text-center text-muted mb-4">
+                Users who haven't logged in for 60 days or more
+            </p>
+
+            <div class="text-center mb-4">
+                <a href="{{ url_for('export_excel') }}" class="btn btn-success">
+                    <i class="bi bi-file-excel"></i> Export to Excel
+                </a>
+            </div>
+
+            {% if results %}
+                {% for license in results %}
+                    <div class="license-card p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="mb-0">{{ license.License }}</h3>
+                            <span class="badge bg-primary">{{ license['User Count'] }} users</span>
+                        </div>
+                        <div class="user-list">
+                            <ul class="list-group">
+                                {% for i in range(license['User Principal Names']|length) %}
+                                    <li class="list-group-item">
+                                        <strong>{{ license['User Principal Names'][i] }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ license['Display Names'][i] }}</small>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info text-center">
+                    No inactive users found in the last 60 days.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html> 
